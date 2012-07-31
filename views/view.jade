@@ -1,0 +1,14 @@
+extends layout
+
+block content
+  table
+    thead
+      tr
+       th Project
+       th Description
+       th Owner
+    tbody
+      each repo in repo_list
+        tr
+          td
+            a(href='/view/'+repo) meow
