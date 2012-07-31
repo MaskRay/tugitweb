@@ -13,19 +13,20 @@ block content
       thead
         tr
          th name
+         th age
          th message
       tbody
-        each e in list(tree)
+        each name, v in last_change.iteritems()
           tr
-            td= e.name
-            if e.to_object().type == 2
-              td
-                a(href=base_url+filepath+'/'+e.name) tree
-            else
-              td
-                a(href=base_url+filepath+'/'+e.name) blob
+            td
+              a(href=base_url+filepath+'/'+name)= name
+            td
+              time(datetime=v[0]+v[1], title=v[0])= v[0]
+            td
+              a(href='/view/'+repo+'/tree/commit/'+v[2].hex+filepath+'/'+name)= v[2].message
+              a(href='mailto:'+v[2].author.email)= '['+v[2].author.name+']'
   else
     .blob_data
-      pre= tree.data
+      pre.prettyprint.linenums= tree.data
 
 

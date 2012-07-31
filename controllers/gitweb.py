@@ -68,7 +68,8 @@ def view_tree_commit_filepath(repo, commitid, filepath='', base_url=None):
     for comp in filepath.split('/'):
         if comp:
             tree = tree[comp].to_object()
-    return jade_template('view_tree.jade', repo=repo, commitid=commitid, filepath=filepath, filepaths=path_inits(repo, os.path.join(filepath)), tree=tree, list=list, base_url=base_url or '/view/'+repo+'/tree/commit/'+commitid)
+    di = last_change=last_change_for_each_entry(r[unicode(commitid)])
+    return jade_template('view_tree.jade', repo=repo, commitid=commitid, filepath=filepath, filepaths=path_inits(repo, os.path.join(filepath)), tree=tree, list=list, base_url=base_url or '/view/'+repo+'/tree/commit/'+commitid, last_change=last_change_for_each_entry(r[unicode(commitid)]))
 
 @route('/view/:repo/branches')
 def view_branches(repo):
@@ -76,23 +77,35 @@ def view_branches(repo):
     tags = [(ref[11:], r.lookup_reference(ref).hex) for ref in r.listall_references() if ref.startswith('refs/heads/')]
     return jade_template('view_tags.jade', repo=repo, tags=tags)
 
+def last_change_for_each_entry(commit):
+    mapping = {e.oid: commit for e in commit.tree}
+    c = commit
+    print commit.tree
+    while c.parents:
+        c = c.parents[0]
+        for e in c.tree:
+            if mapping.has_key(e.oid):
+                mapping[e.oid] = c
+    res = {}
+    for e in commit.tree:
+        c = mapping[e.oid]
+        iso8601 = time.strftime('%FT%T', time.localtime(c.commit_time))
+        hh, mm = c.commit_time_offset//60, c.commit_time_offset%60
+        if hh < 0 and mm > 0:
+            hh += 1
+            mm = 60-mm
+        iso8601_offset = '%+03d%02d' % (hh, mm)
+        res[e.name] = (iso8601, iso8601_offset, c, c)
+    return res
+
 @route('/view/:repo/tree/branch/:branch')
 @route('/view/:repo/tree/branch/:branch/<filepath:re:.*>')
 def view_tree_branch_filepath(repo, branch, filepath=''):
     r = Repository(os.path.join(config.project_root, repo))
     if 'refs/heads/'+branch not in r.listall_references():
         abort(404, 'no such branch')
-    return view_tree_commit_filepath(repo, r.lookup_reference('refs/heads/'+branch).hex, filepath, base_url='/view/'+repo+'/branch/'+branch)
-    filepath = re.sub('/+', '/', filepath)
-    if not filepath.startswith('/'):
-        filepath = '/'+filepath
-    if filepath.endswith('/'):
-        filepath = filepath[:-1]
-    for comp in filepath.split('/'):
-        if comp:
-            tree = tree[comp].to_object()
-    return jade_template('view_tree.jade', repo=repo, branch=branch, filepath=filepath, filepaths=path_inits(repo, os.path.join(filepath)), tree=tree, list=list)
-
+    c = r.lookup_reference('refs/heads/'+branch).hex
+    return view_tree_commit_filepath(repo, c, filepath, base_url='/view/'+repo+'/branch/'+branch)
 
 @route('/view/:repo/commits')
 def view_commits(repo):
