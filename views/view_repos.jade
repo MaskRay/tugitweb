@@ -1,7 +1,7 @@
 extends layout
 
 block content
-  table
+  table.table-striped
     thead
       tr
        th Project
@@ -17,3 +17,5 @@ block content
             a(href='/view/'+repo+'/commits') commits
           td
             a(href='/view/'+repo+'/tags') tags
+          td
+            a(href='/view/'+repo+'/branches') branches

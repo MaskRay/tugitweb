@@ -70,6 +70,12 @@ def view_tree_commit_filepath(repo, commitid, filepath='', base_url=None):
             tree = tree[comp].to_object()
     return jade_template('view_tree.jade', repo=repo, commitid=commitid, filepath=filepath, filepaths=path_inits(repo, os.path.join(filepath)), tree=tree, list=list, base_url=base_url or '/view/'+repo+'/tree/commit/'+commitid)
 
+@route('/view/:repo/branches')
+def view_branches(repo):
+    r = Repository(os.path.join(config.project_root, repo))
+    tags = [(ref[11:], r.lookup_reference(ref).hex) for ref in r.listall_references() if ref.startswith('refs/heads/')]
+    return jade_template('view_tags.jade', repo=repo, tags=tags)
+
 @route('/view/:repo/tree/branch/:branch')
 @route('/view/:repo/tree/branch/:branch/<filepath:re:.*>')
 def view_tree_branch_filepath(repo, branch, filepath=''):
