@@ -1,0 +1,10 @@
+extends layout
+
+block content
+  table.table-striped
+    each hex, author, commit_time, message in commits
+      tr
+        td= author.name
+        td= time.strftime('%FT%T', commit_time)
+        td= message
+        td= hex

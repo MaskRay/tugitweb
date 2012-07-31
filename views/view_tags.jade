@@ -1,0 +1,10 @@
+extends layout
+
+block content
+  table
+    each tag, hex in tags
+      tr
+        td
+          a(href='/view/'+repo+'/tag/'+tag)= tag
+        td
+          a(href='/view/'+repo+'/commit/'+hex)= hex
