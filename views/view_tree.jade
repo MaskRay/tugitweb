@@ -1,0 +1,30 @@
+extends layout
+
+block content
+  .breadcrumb
+    each first, c, p in filepaths
+      if not first
+        span /
+      a(href='/view/'+repo+'/tree/branch/'+branch+p)= c
+
+  if tree.type == 2
+    table.table-striped
+      thead
+        tr
+         th name
+         th message
+      tbody
+        each e in list(tree)
+          tr
+            td= e.name
+            if e.to_object().type == 2
+              td
+                a(href='/view/'+repo+'/tree/branch/'+branch+filepath+'/'+e.name) tree
+            else
+              td
+                a(href='/view/'+repo+'/tree/branch/'+branch+filepath+'/'+e.name) blob
+  else
+    .blob_data
+      p= tree.data
+
+

@@ -1,1 +1,1 @@
-project_root = '/tmp/a'
+project_root = '/tmp'

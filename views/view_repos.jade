@@ -1,0 +1,17 @@
+extends layout
+
+block content
+  table
+    thead
+      tr
+       th Project
+       th Description
+    tbody
+      each repo, desc in repo_list
+        tr
+          td
+            a(href='/view/'+repo)= repo
+          td
+            p= desc
+          td
+            a(href='/view/'+repo+'/commits') commits
