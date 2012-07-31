@@ -2,9 +2,10 @@ extends layout
 
 block content
   table.table-striped
-    each hex, author, commit_time, message in commits
+    each hex, author, iso8601, iso8601_offset, message in commits
       tr
         td= author.name
-        td= time.strftime('%FT%T', commit_time)
+        td
+          time(datetime=iso8601+iso8601_offset, title=iso8601)= iso8601
         td= message
         td= hex

@@ -1,9 +1,15 @@
 html
   head
     h1 TuGitWeb
-    block scripts
-      script(src='/jquery.js')
     link(rel='stylesheet', href='/css/bootstrap-responsive.min.css')
     link(rel='stylesheet', href='/css/bootstrap.min.css')
+    script(type='text/javascript', src='/js/jquery-1.7.2.min.js')
+    script(type='text/javascript', src='/js/relative-date.js')
+    script(type='text/javascript')
+      $(document).ready(function() {
+        $('time').each(function(_,o) {
+          o.textContent = relativeDate(Date.parse(o.textContent.trim()));
+        });
+      });
   body
     block content

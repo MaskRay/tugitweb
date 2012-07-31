@@ -1,6 +1,7 @@
 extends layout
 
 block content
+  script(type='text/javascript', src='/js/relative-date.js')
   .breadcrumb
     each first, c, p in filepaths
       if not first

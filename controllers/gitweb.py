@@ -27,8 +27,12 @@ def jade_template(template_path, **kwargs):
     return res
 
 @route('/css/<filepath:path>')
-def server_static(filepath):
+def css(filepath):
     return static_file(filepath, root=views_dir+'/css')
+
+@route('/js/<filepath:path>')
+def js(filepath):
+    return static_file(filepath, root=views_dir+'/js')
 
 @route('/')
 @route('/view')
@@ -92,7 +96,13 @@ def view_commits(repo):
 
 def get_ancestors(c):
     while True:
-        yield c.hex, c.author, time.gmtime(c.commit_time+c.commit_time_offset), c.message
+        iso8601 = time.strftime('%FT%T', time.localtime(c.commit_time))
+        hh, mm = c.commit_time_offset//60, c.commit_time_offset%60
+        if hh < 0 and mm > 0:
+            hh += 1
+            mm = 60-mm
+        iso8601_offset = '%+03d%02d' % (hh, mm)
+        yield c.hex, c.author, iso8601, iso8601_offset, c.message
         if c.parents == []:
             break
         c = c.parents[0]
